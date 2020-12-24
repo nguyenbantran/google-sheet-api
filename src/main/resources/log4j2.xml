@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="warn" packages="org.apache.logging.log4j.core,io.sentry.log4j2">
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">]
+            <patternlayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%red{%.15t}] [%green{%-5p}] [%blue{%c{1}:%L}] - %m%n"/>
+        </console>
+        <sentry name="Sentry"/>
+    </appenders>
+
+    <loggers>
+        <logger name="io.github.nguyenbantran" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+
+        <root level="error">
+            <appender-ref ref="Console" level="error"/>
+            <!-- Note that the Sentry logging threshold is overridden to the WARN level -->
+            <appender-ref ref="Sentry" level="warn"/>
+        </root>
+
+    </loggers>
+</configuration>
