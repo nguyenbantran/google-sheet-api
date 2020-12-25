@@ -35,4 +35,4 @@ hs_err_pid*
 logs
 .vertx/*
 
-config/googe_sheet_keys.json
+config/google_sheet_keys.json
