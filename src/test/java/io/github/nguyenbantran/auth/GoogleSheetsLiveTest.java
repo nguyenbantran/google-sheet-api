@@ -33,10 +33,6 @@ public class GoogleSheetsLiveTest {
 
     private static Sheets sheetsService;
 
-    // this id can be replaced with your spreadsheet id
-    // otherwise be advised that multiple people may run this test and update the public spreadsheet
-    private static final String SPREADSHEET_ID = "12KnkOF5c4hLCQVkyb-hX_AlGX2jfboOjF0rJAcvj1Qo";
-
     @BeforeClass
     public static void setup() throws GeneralSecurityException, IOException {
         sheetsService = GoogleAuthorizeUtil.getSheetsService();
@@ -52,17 +48,17 @@ public class GoogleSheetsLiveTest {
                         Arrays.asList("Expenses February"),
                         Arrays.asList("clothes", "20"),
                         Arrays.asList("shoes", "5")));
-        UpdateValuesResponse result = sheetsService.spreadsheets().values().update(SPREADSHEET_ID, "A1", body).setValueInputOption("RAW").execute();
+        UpdateValuesResponse result = sheetsService.spreadsheets().values().update(RangeConstant.SPREADSHEET_ID, "A1", body).setValueInputOption("RAW").execute();
 
         List<ValueRange> data = new ArrayList<>();
         data.add(new ValueRange().setRange("D1").setValues(Arrays.asList(Arrays.asList("January Total", "=B2+B3"))));
         data.add(new ValueRange().setRange("D4").setValues(Arrays.asList(Arrays.asList("February Total", "=B5+B6"))));
 
         BatchUpdateValuesRequest batchBody = new BatchUpdateValuesRequest().setValueInputOption("USER_ENTERED").setData(data);
-        BatchUpdateValuesResponse batchResult = sheetsService.spreadsheets().values().batchUpdate(SPREADSHEET_ID, batchBody).execute();
+        BatchUpdateValuesResponse batchResult = sheetsService.spreadsheets().values().batchUpdate(RangeConstant.SPREADSHEET_ID, batchBody).execute();
 
         List<String> ranges = Arrays.asList("E1", "E4");
-        BatchGetValuesResponse readResult = sheetsService.spreadsheets().values().batchGet(SPREADSHEET_ID).setRanges(ranges).execute();
+        BatchGetValuesResponse readResult = sheetsService.spreadsheets().values().batchGet(RangeConstant.SPREADSHEET_ID).setRanges(ranges).execute();
 
         ValueRange januaryTotal = readResult.getValueRanges().get(0);
         assertThat(januaryTotal.getValues().get(0).get(0)).isEqualTo("40");
@@ -71,7 +67,7 @@ public class GoogleSheetsLiveTest {
         assertThat(febTotal.getValues().get(0).get(0)).isEqualTo("25");
 
         ValueRange appendBody = new ValueRange().setValues(Arrays.asList(Arrays.asList("Total", "=E1+E4")));
-        AppendValuesResponse appendResult = sheetsService.spreadsheets().values().append(SPREADSHEET_ID, "A1", appendBody).setValueInputOption("USER_ENTERED").setInsertDataOption("INSERT_ROWS").setIncludeValuesInResponse(true).execute();
+        AppendValuesResponse appendResult = sheetsService.spreadsheets().values().append(RangeConstant.SPREADSHEET_ID, "A1", appendBody).setValueInputOption("USER_ENTERED").setInsertDataOption("INSERT_ROWS").setIncludeValuesInResponse(true).execute();
 
         ValueRange total = appendResult.getUpdates().getUpdatedData();
         assertThat(total.getValues().get(0).get(1)).isEqualTo("65");
@@ -92,7 +88,7 @@ public class GoogleSheetsLiveTest {
 
         BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest().setRequests(requests);
 
-        sheetsService.spreadsheets().batchUpdate(SPREADSHEET_ID, body).execute();
+        sheetsService.spreadsheets().batchUpdate(RangeConstant.SPREADSHEET_ID, body).execute();
     }
 
     @Test

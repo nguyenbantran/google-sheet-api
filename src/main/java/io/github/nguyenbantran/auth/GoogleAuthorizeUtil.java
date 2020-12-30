@@ -11,13 +11,14 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
@@ -25,9 +26,10 @@ public class GoogleAuthorizeUtil {
 
     public static Credential authorize() throws IOException, GeneralSecurityException {
         InputStream in = new FileInputStream("config/cs2.json");
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(),
+                new InputStreamReader(in));
 
-        List<String> scopes = Arrays.asList(SheetsScopes.SPREADSHEETS);
+        List<String> scopes = new LinkedList<>(SheetsScopes.all());
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
@@ -49,6 +51,16 @@ public class GoogleAuthorizeUtil {
         Credential credential = GoogleAuthorizeUtil.authorize();
         return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance(), credential).setApplicationName(APPLICATION_NAME).build();
+    }
+
+    public static Drive getDriveService() throws IOException, GeneralSecurityException {
+        Credential credential = GoogleAuthorizeUtil.authorize();
+        Drive service = new Drive.Builder(GoogleNetHttpTransport.newTrustedTransport(),
+                JacksonFactory.getDefaultInstance(), credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+        return service;
+
     }
 
 
