@@ -22,7 +22,7 @@ public class GoogleAuthorizeUtilTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void test_setPermission() throws Exception {
         var driveService = GoogleAuthorizeUtil.getDriveService();
         System.out.println(driveService);
 
@@ -31,20 +31,16 @@ public class GoogleAuthorizeUtilTest {
 
     }
 
-    private void showAllFiles(Drive driveService) throws Exception {
-        var fileList = driveService.files().list()
-                .execute();
-
-        for (var file : fileList.getFiles()) {
-            log.info("{} - {}", file.getName(), file.getId());
-        }
-    }
-
     private Permission insertPermission(Drive service, String fileId) throws Exception{
         Permission newPermission = new Permission();
         newPermission.setType("anyone");
         newPermission.setRole("reader");
         return service.permissions().create(fileId, newPermission).execute();
+    }
+
+    @Test
+    public void test() {
+
     }
 
 }
